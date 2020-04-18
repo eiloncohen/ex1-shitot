@@ -9,7 +9,7 @@ class label {
 	string word; 
 	DWORD color;
 	COORD coord;
-
+	public:
 	label(string word, COORD coord)
 	{
 		this->word = word; 
@@ -30,9 +30,9 @@ class label {
 		this->coord = coord;
 	}
     void setColor(DWORD fg, DWORD bg){
-        this.color = fg | bg;
+        this->color = fg | bg;
     }
-	void printLableToConsole()
+	 void printLableToConsole()
 	{
 		auto outHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleCursorPosition(outHandle, coord);
