@@ -1,8 +1,6 @@
-#include <windows.h>
 #include "label.h"
 
-
-int main()
+int main(int argc , char * argv[])
 {
     label l = new label("my new label" , {10,7}); 
     l.printLableToConsole();
