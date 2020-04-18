@@ -9,7 +9,7 @@ static COORD GetCursorPosition(HANDLE h_out)
 	}
 	else
 	{
-		cout << "get curser position function faild corser position is {0,0}" << endl;
+		cout << "get curser position function faild corser position return is {0,0}" << endl;
 		return {0, 0};
 	}
 }
@@ -17,10 +17,10 @@ static COORD GetCursorPosition(HANDLE h_out)
 TextBox::TextBox(COORD tbSize, COORD tbPos) : _tbSize(tbSize), _tbPos(tbPos)
 {
 
-	_in = GetStdHandle(STD_INPUT_HANDLE);
-	_out = GetStdHandle(STD_OUTPUT_HANDLE);
+	_hIn = GetStdHandle(STD_INPUT_HANDLE);
+	_hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	if (_in == INVALID_HANDLE_VALUE || _out == INVALID_HANDLE_VALUE)
+	if (_hIn == INVALID_HANDLE_VALUE || _hOut == INVALID_HANDLE_VALUE)
 	{
 		cout << "constructor function, in or out io handle is invalid" << endl;
 	}
@@ -30,19 +30,19 @@ TextBox::TextBox(COORD tbSize, COORD tbPos) : _tbSize(tbSize), _tbPos(tbPos)
 void TextBox::drawTB()
 {
 
-	SetConsoleCursorPosition(_out, _tbPos);
+	SetConsoleCursorPosition(_hOut, _tbPos);
 
 	draw(TOP_LEFT_CORNER, LINE_HORIZONTAL, TOP_RIGHT_CORNER);
-	SetConsoleCursorPosition(_out, {_tbPos.X, _tbPos.Y + 1});
+	SetConsoleCursorPosition(_hOut, {_tbPos.X, _tbPos.Y + 1});
 
 	for (size_t i = 0; i < _tbSize.Y; i++)
 	{
 		draw(LINE_VERTICAL, SPACE, LINE_VERTICAL);
-		SetConsoleCursorPosition(_out, {_tbPos.X, _tbPos.Y + 2 + ((short)i)});
+		SetConsoleCursorPosition(_hOut, {_tbPos.X, _tbPos.Y + 2 + ((short)i)});
 	}
 
 	draw(BTM_LEFT_CORNER, LINE_HORIZONTAL, BTM_RIGHT_CORNER);
-	SetConsoleCursorPosition(_out, {_tbPos.X + 1, _tbPos.Y + 1});
+	SetConsoleCursorPosition(_hOut, {_tbPos.X + 1, _tbPos.Y + 1});
 }
 
 // draw by symbols:
@@ -70,25 +70,24 @@ void TextBox::textInput()
 	DWORD read_bytes, fdw_mode;
 	CONSOLE_SCREEN_BUFFER_INFO info;
 
-
 	fdw_mode = ENABLE_WINDOW_INPUT | ENABLE_EXTENDED_FLAGS;
 
-	ReadConsoleInput(_in, &record, 1, &read_bytes);
-	SetConsoleMode(_in, fdw_mode);
+	ReadConsoleInput(_hIn, &record, 1, &read_bytes);
+	SetConsoleMode(_hIn, fdw_mode);
 
 	switch (record.EventType)
 	{
 	case KEY_EVENT:
-		GetConsoleScreenBufferInfo(_in, &info);
+		GetConsoleScreenBufferInfo(_hIn, &info);
 		if (record.Event.KeyEvent.bKeyDown)
 		{
 			if (record.Event.KeyEvent.uChar.AsciiChar == BACKSPACE)
 			{
-				if (GetCursorPosition(_out).X - 1 == _tbPos.X)
+				if (GetCursorPosition(_hOut).X - 1 == _tbPos.X)
 				{
-					if (GetCursorPosition(_out).Y - 1 > _tbPos.Y)
+					if (GetCursorPosition(_hOut).Y - 1 > _tbPos.Y)
 					{
-						SetConsoleCursorPosition(_out, {_tbPos.X + _tbSize.X - BORDER_OFFSET, GetCursorPosition(_out).Y - ((short)1)});
+						SetConsoleCursorPosition(_hOut, {_tbPos.X + _tbSize.X - BORDER_OFFSET, GetCursorPosition(_hOut).Y - ((short)1)});
 					}
 					else
 					{
@@ -98,14 +97,25 @@ void TextBox::textInput()
 				else
 				{
 					cout << BACKSPACE << CHAR_RESET;
-					SetConsoleCursorPosition(_out, {GetCursorPosition(_out).X - 1, GetCursorPosition(_out).Y});
+					SetConsoleCursorPosition(_hOut, {GetCursorPosition(_hOut).X - 1, GetCursorPosition(_hOut).Y});
 				}
 			}
-			else if (GetCursorPosition(_out).X + 1 == _tbSize.X + _tbPos.X)
+			else if (GetCursorPosition(_hOut).X + 1 == _tbSize.X + _tbPos.X)
 			{
-				if (GetCursorPosition(_out).Y < _tbSize.Y + _tbPos.Y)
+				if (GetCursorPosition(_hOut).Y < _tbSize.Y + _tbPos.Y)
 				{
-					SetConsoleCursorPosition(_out, {_tbPos.X + 1, GetCursorPosition(_out).Y + ((short)1)});
+					SetConsoleCursorPosition(_hOut, {_tbPos.X + 1, GetCursorPosition(_hOut).Y + ((short)1)});
+				}
+			}
+			else if (record.Event.KeyEvent.uChar.AsciiChar == ENTER)
+			{
+				if (GetCursorPosition(_hOut).Y < _tbSize.Y + _tbPos.Y)
+				{
+					SetConsoleCursorPosition(_hOut, {_tbPos.X + 1, GetCursorPosition(_hOut).Y + ((short)1)});
+				}
+				else
+				{
+					break;
 				}
 			}
 			else
@@ -119,7 +129,7 @@ void TextBox::textInput()
 
 void TextBox::setColor(DWORD color)
 {
-	SetConsoleTextAttribute(_out, color);
+	SetConsoleTextAttribute(_hOut, color);
 }
 
 void printTitle()

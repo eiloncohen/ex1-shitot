@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#define BORDER_OFFSET (1)
+#define BORDER_OFFSET (2)
 #define TOP_LEFT_CORNER '\xDA'
 #define TOP_RIGHT_CORNER '\xBF'
 #define BTM_LEFT_CORNER '\xC0'
@@ -23,7 +23,7 @@ class TextBox {
 protected:
 	CONSOLE_SCREEN_BUFFER_INFO _cursor;
 	COORD _tbPos, _tbSize;
-	HANDLE _in, _out;
+	HANDLE _hIn, _hOut;
 
 public:
 	TextBox(COORD tbSize = {0,0}, COORD tbPos = { 0,0 });
