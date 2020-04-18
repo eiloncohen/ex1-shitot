@@ -36,7 +36,7 @@ class label {
 	{
 		auto outHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleCursorPosition(outHandle, coord);
-        setConsoleTextAttribute(outHandle, color);
+        SetConsoleTextAttribute(outHandle, color);
 		cout << word;
 		CONSOLE_CURSOR_INFO info = {1,0};
 		SetConsoleCursorInfo(outHandle, &info);
