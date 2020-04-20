@@ -142,7 +142,7 @@ void TextBox::textInput()
 						SetConsoleCursorPosition(_hOut, {GetCursorPosition(_hOut).X + 1, GetCursorPosition(_hOut).Y});
 						_stepCount--;
 					}
-					else if (GetCursorPosition(_hOut).X == _tbPos.X + _tbSize.X - BORDER_OFFSET)
+					else if (GetCursorPosition(_hOut).X == _tbPos.X + _tbSize.X - BORDER_OFFSET && GetCursorPosition(_hOut).Y < _tbSize.Y + _tbPos.Y)
 					{
 						SetConsoleCursorPosition(_hOut, {_tbPos.X + 1, GetCursorPosition(_hOut).Y + ((short)1)});
 						_stepCount--;
