@@ -14,7 +14,7 @@ static COORD GetCursorPosition(HANDLE h_out)
 	}
 }
 
-TextBox::TextBox(COORD tbSize, COORD tbPos) : _tbSize(tbSize), _tbPos(tbPos)
+TextBox::TextBox(COORD tbSize, COORD tbPos) : _tbSize(tbSize), _tbPos(tbPos), _stepCount(0)
 {
 
 	_hIn = GetStdHandle(STD_INPUT_HANDLE);
@@ -88,6 +88,8 @@ void TextBox::textInput()
 					if (GetCursorPosition(_hOut).Y - 1 > _tbPos.Y)
 					{
 						SetConsoleCursorPosition(_hOut, {_tbPos.X + _tbSize.X - BORDER_OFFSET, GetCursorPosition(_hOut).Y - ((short)1)});
+						cout << CHAR_RESET;
+						SetConsoleCursorPosition(_hOut, {GetCursorPosition(_hOut).X - 1, GetCursorPosition(_hOut).Y});
 					}
 					else
 					{
@@ -100,13 +102,6 @@ void TextBox::textInput()
 					SetConsoleCursorPosition(_hOut, {GetCursorPosition(_hOut).X - 1, GetCursorPosition(_hOut).Y});
 				}
 			}
-			else if (GetCursorPosition(_hOut).X + 1 == _tbSize.X + _tbPos.X)
-			{
-				if (GetCursorPosition(_hOut).Y < _tbSize.Y + _tbPos.Y)
-				{
-					SetConsoleCursorPosition(_hOut, {_tbPos.X + 1, GetCursorPosition(_hOut).Y + ((short)1)});
-				}
-			}
 			else if (record.Event.KeyEvent.uChar.AsciiChar == ENTER)
 			{
 				if (GetCursorPosition(_hOut).Y < _tbSize.Y + _tbPos.Y)
@@ -116,6 +111,49 @@ void TextBox::textInput()
 				else
 				{
 					break;
+				}
+			}
+			else if (record.Event.KeyEvent.wVirtualKeyCode == VK_LEFT)
+			{
+				if (0 == GetCursorPosition(_hOut).Y - _tbPos.Y - 1 && 0 == GetCursorPosition(_hOut).X - _tbPos.X - 1)
+					break;
+				else
+				{
+					if (GetCursorPosition(_hOut).X - _tbPos.X - 1 > 0)
+					{
+						SetConsoleCursorPosition(_hOut, {GetCursorPosition(_hOut).X - 1, GetCursorPosition(_hOut).Y});
+						_stepCount++;
+					}
+					else if (GetCursorPosition(_hOut).X - _tbPos.X - 1 == 0 && GetCursorPosition(_hOut).Y > _tbPos.Y + 1)
+					{
+						SetConsoleCursorPosition(_hOut, {_tbPos.X + _tbSize.X - BORDER_OFFSET, GetCursorPosition(_hOut).Y - ((short)1)});
+						_stepCount++;
+					}
+				}
+			}
+			else if (record.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT)
+			{
+				if (_stepCount == 0)
+					break;
+				else
+				{
+					if (GetCursorPosition(_hOut).X < _tbPos.X + _tbSize.X - BORDER_OFFSET)
+					{
+						SetConsoleCursorPosition(_hOut, {GetCursorPosition(_hOut).X + 1, GetCursorPosition(_hOut).Y});
+						_stepCount--;
+					}
+					else if (GetCursorPosition(_hOut).X == _tbPos.X + _tbSize.X - BORDER_OFFSET)
+					{
+						SetConsoleCursorPosition(_hOut, {_tbPos.X + 1, GetCursorPosition(_hOut).Y + ((short)1)});
+						_stepCount--;
+					}
+				}
+			}
+			else if (GetCursorPosition(_hOut).X + 1 == _tbSize.X + _tbPos.X)
+			{
+				if (GetCursorPosition(_hOut).Y < _tbSize.Y + _tbPos.Y)
+				{
+					SetConsoleCursorPosition(_hOut, {_tbPos.X + 1, GetCursorPosition(_hOut).Y + ((short)1)});
 				}
 			}
 			else

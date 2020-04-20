@@ -24,6 +24,7 @@ protected:
 	CONSOLE_SCREEN_BUFFER_INFO _cursor;
 	COORD _tbPos, _tbSize;
 	HANDLE _hIn, _hOut;
+	int _stepCount;
 
 public:
 	TextBox(COORD tbSize = {0,0}, COORD tbPos = { 0,0 });
