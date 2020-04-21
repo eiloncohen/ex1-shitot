@@ -47,7 +47,7 @@ void CheckList::print(string brac, string opt, size_t num)
 
 void CheckList::choosen()
 {
-	//doto
+	//todo
 }
 void CheckList::keyEventProc(KEY_EVENT_RECORD ker)
 {
